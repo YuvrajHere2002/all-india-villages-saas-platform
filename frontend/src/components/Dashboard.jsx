@@ -1,48 +1,82 @@
-import { useEffect, useState } from 'react';
-
-import API from '../services/api';
+import { useEffect, useState } from "react";
 
 import {
+
     BarChart,
+
     Bar,
+
     XAxis,
+
     YAxis,
+
     Tooltip,
-    CartesianGrid,
+
     ResponsiveContainer
-} from 'recharts';
+
+} from "recharts";
+
+
+
+import API from "../services/api";
+
+
 
 
 
 function Dashboard() {
 
-    const [states, setStates] = useState([]);
+    const [analytics, setAnalytics] = useState({
 
-    const [search, setSearch] = useState('');
+        total_states: 0,
+
+        total_districts: 0,
+
+        total_subdistricts: 0,
+
+        total_villages: 0
+
+    });
+
+
+
+
+
+    const [search, setSearch] = useState("");
+
+
 
     const [villages, setVillages] = useState([]);
 
 
 
 
+
     useEffect(() => {
 
-        fetchStates();
+        fetchAnalytics();
 
     }, []);
 
 
 
 
-    const fetchStates = async () => {
+
+    const fetchAnalytics = async () => {
 
         try {
 
-            const response = await API.get('/states');
+            const response = await API.get("/analytics");
 
-            setStates(response.data);
 
-        } catch (error) {
+
+
+
+            setAnalytics(response.data);
+
+        }
+
+        catch (error) {
 
             console.log(error);
 
@@ -53,25 +87,51 @@ function Dashboard() {
 
 
 
-    const searchVillages = async () => {
+
+    const searchVillages = async (value) => {
 
         try {
+
+            setSearch(value);
+
+
+
+
+
+            if (value.trim() === "") {
+
+                setVillages([]);
+
+                return;
+
+            }
+
+
+
+
 
             const response = await API.get(
 
-                `/search?q=${search}`
+                `/search?q=${value}&page=1`
 
             );
 
-            setVillages(response.data);
 
-        } catch (error) {
+
+
+
+            setVillages(response.data.results);
+
+        }
+
+        catch (error) {
 
             console.log(error);
 
         }
 
     };
+
 
 
 
@@ -79,18 +139,35 @@ function Dashboard() {
     const chartData = [
 
         {
-            name: 'Gujarat',
-            villages: 32000
+
+            name: "States",
+
+            count: Number(analytics.total_states)
+
         },
 
         {
-            name: 'Maharashtra',
-            villages: 45000
+
+            name: "Districts",
+
+            count: Number(analytics.total_districts)
+
         },
 
         {
-            name: 'UP',
-            villages: 50000
+
+            name: "Subdistricts",
+
+            count: Number(analytics.total_subdistricts)
+
+        },
+
+        {
+
+            name: "Villages",
+
+            count: Number(analytics.total_villages)
+
         }
 
     ];
@@ -98,14 +175,12 @@ function Dashboard() {
 
 
 
+
     return (
 
-        <div className="min-h-screen bg-gray-900 text-white p-8">
+        <div className="min-h-screen bg-slate-950 text-white p-10">
 
-
-
-
-            <h1 className="text-4xl font-bold mb-8">
+            <h1 className="text-5xl font-bold mb-10">
 
                 All India Villages Dashboard 🚀
 
@@ -114,22 +189,22 @@ function Dashboard() {
 
 
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
 
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
 
+                <div className="bg-slate-800 p-6 rounded-2xl">
 
+                    <h2 className="text-2xl font-bold">
 
-                <div className="bg-gray-800 p-6 rounded-2xl shadow-lg">
-
-                    <h2 className="text-xl font-semibold mb-2">
-
-                        Total States
+                        States
 
                     </h2>
 
-                    <p className="text-3xl font-bold text-blue-400">
 
-                        {states.length}
+
+                    <p className="text-4xl mt-4 text-blue-400">
+
+                        {analytics.total_states}
 
                     </p>
 
@@ -138,17 +213,20 @@ function Dashboard() {
 
 
 
-                <div className="bg-gray-800 p-6 rounded-2xl shadow-lg">
 
-                    <h2 className="text-xl font-semibold mb-2">
+                <div className="bg-slate-800 p-6 rounded-2xl">
 
-                        Active APIs
+                    <h2 className="text-2xl font-bold">
+
+                        Districts
 
                     </h2>
 
-                    <p className="text-3xl font-bold text-green-400">
 
-                        5
+
+                    <p className="text-4xl mt-4 text-green-400">
+
+                        {analytics.total_districts}
 
                     </p>
 
@@ -157,17 +235,42 @@ function Dashboard() {
 
 
 
-                <div className="bg-gray-800 p-6 rounded-2xl shadow-lg">
 
-                    <h2 className="text-xl font-semibold mb-2">
+                <div className="bg-slate-800 p-6 rounded-2xl">
 
-                        Database
+                    <h2 className="text-2xl font-bold">
+
+                        Subdistricts
 
                     </h2>
 
-                    <p className="text-3xl font-bold text-purple-400">
 
-                        Connected
+
+                    <p className="text-4xl mt-4 text-yellow-400">
+
+                        {analytics.total_subdistricts}
+
+                    </p>
+
+                </div>
+
+
+
+
+
+                <div className="bg-slate-800 p-6 rounded-2xl">
+
+                    <h2 className="text-2xl font-bold">
+
+                        Villages
+
+                    </h2>
+
+
+
+                    <p className="text-4xl mt-4 text-pink-400">
+
+                        {analytics.total_villages}
 
                     </p>
 
@@ -178,83 +281,10 @@ function Dashboard() {
 
 
 
-            <div className="bg-gray-800 p-6 rounded-2xl shadow-lg mb-10">
 
-                <h2 className="text-2xl font-bold mb-4">
+            <div className="bg-slate-800 p-6 rounded-2xl mb-10">
 
-                    States Data
-
-                </h2>
-
-
-
-
-                <table className="w-full border-collapse">
-
-                    <thead>
-
-                        <tr className="bg-gray-700">
-
-                            <th className="p-3 text-left">
-
-                                ID
-
-                            </th>
-
-                            <th className="p-3 text-left">
-
-                                State Name
-
-                            </th>
-
-                        </tr>
-
-                    </thead>
-
-
-
-
-                    <tbody>
-
-                        {
-
-                            states.map((state) => (
-
-                                <tr
-                                    key={state.id}
-                                    className="border-b border-gray-700"
-                                >
-
-                                    <td className="p-3">
-
-                                        {state.id}
-
-                                    </td>
-
-                                    <td className="p-3">
-
-                                        {state.state_name}
-
-                                    </td>
-
-                                </tr>
-
-                            ))
-
-                        }
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-
-
-
-            <div className="bg-gray-800 p-6 rounded-2xl shadow-lg mb-10">
-
-                <h2 className="text-2xl font-bold mb-4">
+                <h2 className="text-4xl font-bold mb-6">
 
                     Search Villages
 
@@ -263,45 +293,44 @@ function Dashboard() {
 
 
 
-                <div className="flex gap-4 mb-6">
 
-                    <input
-                        type="text"
-                        placeholder="Enter village name"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        className="flex-1 p-3 rounded-lg bg-gray-700 text-white outline-none"
-                    />
+                <input
 
+                    type="text"
 
+                    placeholder="Search village..."
 
+                    value={search}
 
-                    <button
-                        onClick={searchVillages}
-                        className="bg-blue-500 px-6 py-3 rounded-lg hover:bg-blue-600"
-                    >
+                    onChange={(e) =>
 
-                        Search
+                        searchVillages(e.target.value)
 
-                    </button>
+                    }
 
-                </div>
+                    className="w-full p-4 rounded-xl bg-slate-700 text-white"
+
+                />
 
 
 
 
-                <div className="space-y-4">
+
+                <div className="mt-6 space-y-4">
 
                     {
 
                         villages.map((village) => (
 
                             <div
+
                                 key={village.id}
-                                className="bg-gray-700 p-4 rounded-xl"
+
+                                className="bg-slate-700 p-4 rounded-xl"
+
                             >
 
-                                <h3 className="text-xl font-semibold">
+                                <h3 className="text-xl font-bold">
 
                                     {village.village_name}
 
@@ -309,14 +338,37 @@ function Dashboard() {
 
 
 
+                                <p>
 
-                                <p className="text-gray-300">
+                                    {
 
-                                    {village.subdistrict_name},
-                                    {' '}
-                                    {village.district_name},
-                                    {' '}
-                                    {village.state_name}
+                                        village.subdistrict_name
+
+                                    }
+
+                                    ,
+
+                                    {" "}
+
+                                    {
+
+                                        village.district_name
+
+                                    }
+
+                                    ,
+
+                                    {" "}
+
+                                    {
+
+                                        village.state_name
+
+                                    }
+
+                                    ,
+
+                                    India
 
                                 </p>
 
@@ -333,9 +385,10 @@ function Dashboard() {
 
 
 
-            <div className="bg-gray-800 p-6 rounded-2xl shadow-lg">
 
-                <h2 className="text-2xl font-bold mb-6">
+            <div className="bg-slate-800 p-6 rounded-2xl">
+
+                <h2 className="text-4xl font-bold mb-6">
 
                     Analytics Dashboard
 
@@ -344,24 +397,35 @@ function Dashboard() {
 
 
 
+
                 <ResponsiveContainer
+
                     width="100%"
-                    height={350}
+
+                    height={400}
+
                 >
 
                     <BarChart data={chartData}>
 
-                        <CartesianGrid strokeDasharray="3 3" />
-
                         <XAxis dataKey="name" />
+
+
 
                         <YAxis />
 
+
+
                         <Tooltip />
 
+
+
                         <Bar
-                            dataKey="villages"
+
+                            dataKey="count"
+
                             fill="#3B82F6"
+
                         />
 
                     </BarChart>
@@ -375,6 +439,8 @@ function Dashboard() {
     );
 
 }
+
+
 
 
 
