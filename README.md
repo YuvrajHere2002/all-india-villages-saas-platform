@@ -1,5 +1,7 @@
 All India Villages SaaS Platform 🚀
 
+REFER THE DOCS UPLOADED FOR BETTER TEXT UNDERSTANDING OF THIS README FILE !!
+
 A production-style Full Stack SaaS platform that provides a comprehensive REST API for India's village-level geographical data.
 
 Built using:
